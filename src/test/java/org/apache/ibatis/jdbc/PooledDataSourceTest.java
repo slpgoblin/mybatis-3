@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -32,10 +32,10 @@ import org.hsqldb.jdbc.JDBCConnection;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-public class PooledDataSourceTest extends BaseDataTest {
+class PooledDataSourceTest extends BaseDataTest {
 
   @Test
-  public void shouldProperlyMaintainPoolOf3ActiveAnd2IdleConnections() throws Exception {
+  void shouldProperlyMaintainPoolOf3ActiveAnd2IdleConnections() throws Exception {
     PooledDataSource ds = createPooledDataSource(JPETSTORE_PROPERTIES);
     try {
       runScript(ds, JPETSTORE_DDL);
@@ -76,7 +76,7 @@ public class PooledDataSourceTest extends BaseDataTest {
   }
 
   @Test
-  public void shouldNotFailCallingToStringOverAnInvalidConnection() throws Exception {
+  void shouldNotFailCallingToStringOverAnInvalidConnection() throws Exception {
     PooledDataSource ds = createPooledDataSource(JPETSTORE_PROPERTIES);
     Connection c = ds.getConnection();
     c.close();
@@ -84,7 +84,7 @@ public class PooledDataSourceTest extends BaseDataTest {
   }
 
   @Test
-  public void ShouldReturnRealConnection() throws Exception {
+  void ShouldReturnRealConnection() throws Exception {
     PooledDataSource ds = createPooledDataSource(JPETSTORE_PROPERTIES);
     Connection c = ds.getConnection();
     JDBCConnection realConnection = (JDBCConnection) PooledDataSource.unwrapConnection(c);
@@ -93,7 +93,7 @@ public class PooledDataSourceTest extends BaseDataTest {
 
   @Disabled("See the comments")
   @Test
-  public void shouldReconnectWhenServerKilledLeakedConnection() throws Exception {
+  void shouldReconnectWhenServerKilledLeakedConnection() throws Exception {
     // See #748
     // Requirements:
     // 1. MySQL JDBC driver dependency.
@@ -121,7 +121,7 @@ public class PooledDataSourceTest extends BaseDataTest {
     ds.setPoolPingConnectionsNotUsedFor(1000);
 
     Connection con = ds.getConnection();
-    exexuteQuery(con);
+    executeQuery(con);
     // Simulate connection leak by not closing.
     // con.close();
 
@@ -132,11 +132,11 @@ public class PooledDataSourceTest extends BaseDataTest {
 
     // Should return usable connection.
     con = ds.getConnection();
-    exexuteQuery(con);
+    executeQuery(con);
     con.close();
   }
 
-  private void exexuteQuery(Connection con) throws SQLException {
+  private void executeQuery(Connection con) throws SQLException {
     try (PreparedStatement st = con.prepareStatement("select 1");
          ResultSet rs = st.executeQuery()) {
       while (rs.next()) {

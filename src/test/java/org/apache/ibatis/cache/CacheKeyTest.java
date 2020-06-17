@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2019 the original author or authors.
+ *    Copyright 2009-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -17,9 +17,6 @@ package org.apache.ibatis.cache;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.NotSerializableException;
@@ -27,43 +24,46 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
 
-public class CacheKeyTest {
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+class CacheKeyTest {
 
   @Test
-  public void shouldTestCacheKeysEqual() {
+  void shouldTestCacheKeysEqual() {
     Date date = new Date();
     CacheKey key1 = new CacheKey(new Object[] { 1, "hello", null, new Date(date.getTime()) });
     CacheKey key2 = new CacheKey(new Object[] { 1, "hello", null, new Date(date.getTime()) });
-    assertTrue(key1.equals(key2));
-    assertTrue(key2.equals(key1));
-    assertTrue(key1.hashCode() == key2.hashCode());
-    assertTrue(key1.toString().equals(key2.toString()));
+    assertEquals(key1, key2);
+    assertEquals(key2, key1);
+    assertEquals(key1.hashCode(), key2.hashCode());
+    assertEquals(key1.toString(), key2.toString());
   }
 
   @Test
-  public void shouldTestCacheKeysNotEqualDueToDateDifference() throws Exception {
+  void shouldTestCacheKeysNotEqualDueToDateDifference() throws Exception {
     CacheKey key1 = new CacheKey(new Object[] { 1, "hello", null, new Date() });
     Thread.sleep(1000);
     CacheKey key2 = new CacheKey(new Object[] { 1, "hello", null, new Date() });
-    assertFalse(key1.equals(key2));
-    assertFalse(key2.equals(key1));
-    assertFalse(key1.hashCode() == key2.hashCode());
-    assertFalse(key1.toString().equals(key2.toString()));
+    assertNotEquals(key1, key2);
+    assertNotEquals(key2, key1);
+    assertNotEquals(key1.hashCode(), key2.hashCode());
+    assertNotEquals(key1.toString(), key2.toString());
   }
 
   @Test
-  public void shouldTestCacheKeysNotEqualDueToOrder() throws Exception {
+  void shouldTestCacheKeysNotEqualDueToOrder() throws Exception {
     CacheKey key1 = new CacheKey(new Object[] { 1, "hello", null });
     Thread.sleep(1000);
     CacheKey key2 = new CacheKey(new Object[] { 1, null, "hello" });
-    assertFalse(key1.equals(key2));
-    assertFalse(key2.equals(key1));
-    assertFalse(key1.hashCode() == key2.hashCode());
-    assertFalse(key1.toString().equals(key2.toString()));
+    assertNotEquals(key1, key2);
+    assertNotEquals(key2, key1);
+    assertNotEquals(key1.hashCode(), key2.hashCode());
+    assertNotEquals(key1.toString(), key2.toString());
   }
 
   @Test
-  public void shouldDemonstrateEmptyAndNullKeysAreEqual() {
+  void shouldDemonstrateEmptyAndNullKeysAreEqual() {
     CacheKey key1 = new CacheKey();
     CacheKey key2 = new CacheKey();
     assertEquals(key1, key2);
@@ -79,16 +79,16 @@ public class CacheKeyTest {
   }
 
   @Test
-  public void shouldTestCacheKeysWithBinaryArrays() throws Exception {
+  void shouldTestCacheKeysWithBinaryArrays() {
     byte[] array1 = new byte[] { 1 };
     byte[] array2 = new byte[] { 1 };
     CacheKey key1 = new CacheKey(new Object[] { array1 });
     CacheKey key2 = new CacheKey(new Object[] { array2 });
-    assertTrue(key1.equals(key2));
+    assertEquals(key1, key2);
   }
 
   @Test
-  public void serializationExceptionTest() throws Exception {
+  void serializationExceptionTest() {
     CacheKey cacheKey = new CacheKey();
     cacheKey.update(new Object());
     Assertions.assertThrows(NotSerializableException.class, () -> {
@@ -97,7 +97,7 @@ public class CacheKeyTest {
   }
 
   @Test
-  public void serializationTest() throws Exception {
+  void serializationTest() throws Exception {
     CacheKey cacheKey = new CacheKey();
     cacheKey.update("serializable");
     Assertions.assertEquals(cacheKey, serialize(cacheKey));

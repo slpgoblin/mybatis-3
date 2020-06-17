@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2018 the original author or authors.
+ *    Copyright 2009-2019 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -191,6 +191,10 @@ public class SqlRunner {
     }
   }
 
+  /**
+   * @deprecated Since 3.5.4, this method is deprecated. Please close the {@link Connection} outside of this class.
+   */
+  @Deprecated
   public void closeConnection() {
     try {
       connection.close();
@@ -248,7 +252,7 @@ public class SqlRunner {
     } finally {
       if (rs != null) {
         try {
-            rs.close();
+          rs.close();
         } catch (Exception e) {
           // ignore
         }
