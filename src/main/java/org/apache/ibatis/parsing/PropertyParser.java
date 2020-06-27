@@ -50,46 +50,85 @@ public class PropertyParser {
     // Prevent Instantiation
   }
 
+  /**
+   * 解析动态参数
+   * @param string
+   * @param variables
+   * @return
+   */
   public static String parse(String string, Properties variables) {
+    // {1} 创建 TokenHandler
     VariableTokenHandler handler = new VariableTokenHandler(variables);
+    // {2} 创建 GenericTokenParser
+    // 对应动态参数的 ${} 规则
     GenericTokenParser parser = new GenericTokenParser("${", "}", handler);
+    // 开始解析
     return parser.parse(string);
   }
 
   private static class VariableTokenHandler implements TokenHandler {
+    /**
+     * Properties 对象
+     */
     private final Properties variables;
+    /**
+     * 是否开启默认值功能，默认为 {@link #ENABLE_DEFAULT_VALUE} 即 "false"
+      */
     private final boolean enableDefaultValue;
+    /**
+     * 默认值的分隔符。默认为 {@link #DEFAULT_VALUE_SEPARATOR} 即 ":" 。
+     */
     private final String defaultValueSeparator;
 
+    /**
+     * 构造方法
+     * @param variables Properties 对象
+     */
     private VariableTokenHandler(Properties variables) {
       this.variables = variables;
       this.enableDefaultValue = Boolean.parseBoolean(getPropertyValue(KEY_ENABLE_DEFAULT_VALUE, ENABLE_DEFAULT_VALUE));
       this.defaultValueSeparator = getPropertyValue(KEY_DEFAULT_VALUE_SEPARATOR, DEFAULT_VALUE_SEPARATOR);
     }
 
+    /**
+     * 获取默认值
+     * @param key key
+     * @param defaultValue 默认值
+     * @return
+     */
     private String getPropertyValue(String key, String defaultValue) {
       return (variables == null) ? defaultValue : variables.getProperty(key, defaultValue);
     }
 
+    /**
+     * 参数替换方法
+     * @param content 被替换的参数
+     * @return 替换后的值
+     */
     @Override
     public String handleToken(String content) {
       if (variables != null) {
         String key = content;
+        // 判断是否开启默认值功能
         if (enableDefaultValue) {
+          // 获取默认值
           final int separatorIndex = content.indexOf(defaultValueSeparator);
           String defaultValue = null;
           if (separatorIndex >= 0) {
             key = content.substring(0, separatorIndex);
             defaultValue = content.substring(separatorIndex + defaultValueSeparator.length());
           }
+          // 如果参数有值返回参数值，如果参数为空则返回默认值
           if (defaultValue != null) {
             return variables.getProperty(key, defaultValue);
           }
         }
+        // 如果没有开启默认值，直接获取配置文件的参数并返回
         if (variables.containsKey(key)) {
           return variables.getProperty(key);
         }
       }
+      // 如果没有Properties配置文件，直接返回原值
       return "${" + content + "}";
     }
   }
